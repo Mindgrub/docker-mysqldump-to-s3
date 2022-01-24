@@ -15,7 +15,7 @@ destination="/data/$filename"
 mysqldump -h "$DB_HOST" -u "$DB_USER" --password="$DB_PASS" -R -E --triggers --single-transaction --comments --set-gtid-purged=off --column-statistics=0 --net-buffer-length="$MYSQL_NET_BUFFER_LENGTH" "$DB_NAME" | gzip > "$destination"
 
 extra_metadata=""
-if [[ -z "$REQUESTOR" ]]; then
+if [[ ! -z "$REQUESTOR" ]]; then
     extra_metadata=",Requestor=$REQUESTOR"
 fi
 
