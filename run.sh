@@ -12,7 +12,7 @@ filename="${FILENAME_PREFIX}-${timestamp}.sql.gz"
 destination="/data/$filename"
 
 # Export the database
-mysqldump -h "$DB_HOST" -u "$DB_USER" --password="$DB_PASS" -R -E --triggers --single-transaction --comments --set-gtid-purged=off --column-statistics=0 --net-buffer-length="$MYSQL_NET_BUFFER_LENGTH" "$DB_NAME" | gzip > "$destination"
+mysqldump -h "$DB_HOST" -u "$DB_USER" --password="$DB_PASS" -R -E --triggers --single-transaction --comments --column-statistics=0 --net-buffer-length="$MYSQL_NET_BUFFER_LENGTH" "$DB_NAME" | gzip > "$destination"
 
 extra_metadata=""
 if [[ ! -z "$REQUESTOR" ]]; then
