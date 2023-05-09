@@ -1,10 +1,11 @@
 #!/bin/sh
-set -eo pipefail
+set -e
 
 # Variable defaults
 : "${FILENAME_PREFIX:=snapshot}"
 : "${MYSQL_NET_BUFFER_LENGTH:=16384}"
 : "${S3_STORAGE_TIER:=STANDARD_IA}"
+: "${DB_PORT:=3306}"
 
 # Set up our output filenames
 timestamp=$(date --iso-8601=seconds | tr -d ':-' | cut -c1-15)
@@ -14,11 +15,11 @@ s3_url="s3://${S3_BUCKET}/${S3_PREFIX}${filename}"
 
 # Export the database
 echo "About to export mysql://$DB_HOST/$DB_NAME to $destination"
-mysqldump -h "$DB_HOST" -u "$DB_USER" --password="$DB_PASS" -R -E --triggers --single-transaction --comments --net-buffer-length="$MYSQL_NET_BUFFER_LENGTH" "$DB_NAME" | gzip > "$destination"
+mysqldump -h "$DB_HOST" -u "$DB_USER" --password="$DB_PASS" -P "$DB_PORT" -R -E --triggers --single-transaction --comments --net-buffer-length="$MYSQL_NET_BUFFER_LENGTH" "$DB_NAME" | gzip > "$destination"
 echo "Export to $destination completed"
 
 extra_metadata=""
-if [[ ! -z "$REQUESTOR" ]]; then
+if [ -n "$REQUESTOR" ]; then
     extra_metadata=",Requestor=$REQUESTOR"
 fi
 

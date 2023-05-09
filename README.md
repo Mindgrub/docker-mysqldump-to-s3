@@ -4,16 +4,17 @@ An Alpine-based Docker image for producing a file with `mysqldump` and uploading
 
 ## Environment Variables
 
-* `DB_HOST` – Required. The hostname to which `mysqldump` will connect.
-* `DB_NAME` – Required. The name of the database to dump.
-* `DB_USER` – Required. The username to use to connect.
-* `DB_PASS` – Required. The password to use to connect.
-* `S3_BUCKET` – Required. The S3 bucket to store the exported file.
-* `FILENAME_PREFIX` – Optional. A string to prepend to the exported file (Default: "snapshot").
-* `S3_STORAGE_TIER` – Optional. The storage tier to use with S3 (Default: "STANDARD_IA").
-* `S3_PREFIX` – Optional. A string to prepend to the S3 object key (Default: "").
-* `MYSQL_NET_BUFFER_LENGTH` – Optional. The `net_buffer_length` setting for `mysqldump` (Default: "16384").
-* `REQUESTOR` – Optional. The email address of the user who requested this dump to be stored in the S3 metadata.
+- `DB_HOST` – Required. The hostname to which `mysqldump` will connect.
+- `DB_PORT` – Optional. The TCP port to which `mysqldump` will connect (Default: "3306").
+- `DB_NAME` – Required. The name of the database to dump.
+- `DB_USER` – Required. The username to use to connect.
+- `DB_PASS` – Required. The password to use to connect.
+- `S3_BUCKET` – Required. The S3 bucket to store the exported file.
+- `FILENAME_PREFIX` – Optional. A string to prepend to the exported file (Default: "snapshot").
+- `S3_STORAGE_TIER` – Optional. The storage tier to use with S3 (Default: "STANDARD_IA").
+- `S3_PREFIX` – Optional. A string to prepend to the S3 object key (Default: "").
+- `MYSQL_NET_BUFFER_LENGTH` – Optional. The `net_buffer_length` setting for `mysqldump` (Default: "16384").
+- `REQUESTOR` – Optional. The email address of the user who requested this dump to be stored in the S3 metadata.
 
 ### AWS Permissions
 
