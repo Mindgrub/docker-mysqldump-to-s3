@@ -1,6 +1,11 @@
 #!/bin/sh
 set -e
 
+# Send heartbeat
+if [ -n "$SFN_TASK_TOKEN" ]; then
+  aws stepfunctions send-task-heartbeat --task-token "$SFN_TASK_TOKEN"
+fi
+
 # Variable defaults
 : "${FILENAME_PREFIX:=snapshot}"
 : "${MYSQL_NET_BUFFER_LENGTH:=16384}"
@@ -18,12 +23,22 @@ echo "About to export mysql://$DB_HOST/$DB_NAME to $destination"
 mysqldump -h "$DB_HOST" -u "$DB_USER" --password="$DB_PASS" -P "$DB_PORT" -R -E --triggers --single-transaction --comments --net-buffer-length="$MYSQL_NET_BUFFER_LENGTH" "$DB_NAME" | gzip > "$destination"
 echo "Export to $destination completed"
 
+# Send heartbeat
+if [ -n "$SFN_TASK_TOKEN" ]; then
+  aws stepfunctions send-task-heartbeat --task-token "$SFN_TASK_TOKEN"
+fi
+
+# Publish to S3
 extra_metadata=""
 if [ -n "$REQUESTOR" ]; then
     extra_metadata=",Requestor=$REQUESTOR"
 fi
-
-# Publish to S3
 echo "About to upload $destination to $s3_url"
 aws s3 cp "$destination" "$s3_url" --storage-class "$S3_STORAGE_TIER" --metadata "DatabaseHost=${DB_HOST},DatabaseName=${DB_NAME}${extra_metadata}"
 echo "Upload to $s3_url completed"
+
+# Send activity success
+if [ -n "$SFN_TASK_TOKEN" ]; then
+  json_output=$(jq -cn --arg uri "$s3_url" '{"uri":$uri}')
+  aws stepfunctions send-task-success --task-token "$SFN_TASK_TOKEN" --task-output "$json_output"
+fi
