@@ -1,5 +1,6 @@
 #!/bin/sh
 set -e
+set -o pipefail
 
 # Send heartbeat
 if [ -n "$SFN_TASK_TOKEN" ]; then
@@ -8,7 +9,6 @@ fi
 
 # Variable defaults
 : "${FILENAME_PREFIX:=snapshot}"
-: "${MYSQL_NET_BUFFER_LENGTH:=16384}"
 : "${S3_STORAGE_TIER:=STANDARD_IA}"
 : "${DB_PORT:=3306}"
 
@@ -19,8 +19,17 @@ destination="/data/$filename"
 s3_url="s3://${S3_BUCKET}/${S3_PREFIX}${filename}"
 
 # Export the database
+set -- -h "$DB_HOST" -u "$DB_USER" --password="$DB_PASS" -P "$DB_PORT" -R -E --triggers --single-transaction --comments
+if [ -n "$MYSQL_NET_BUFFER_LENGTH" ]; then
+  set -- "$@" --net-buffer-length="$MYSQL_NET_BUFFER_LENGTH"
+fi
+if [ -n "$MYSQLDUMP_OPTS" ]; then
+  set -- "$@" $MYSQLDUMP_OPTS
+fi
+set -- "$@" "$DB_NAME"
+mysqldump_opts=$(printf ' %s' "$@")
 echo "About to export mysql://$DB_HOST/$DB_NAME to $destination"
-mysqldump -h "$DB_HOST" -u "$DB_USER" --password="$DB_PASS" -P "$DB_PORT" -R -E --triggers --single-transaction --comments --net-buffer-length="$MYSQL_NET_BUFFER_LENGTH" "$DB_NAME" | gzip > "$destination"
+eval "mysqldump $mysqldump_opts" | gzip > "$destination"
 echo "Export to $destination completed"
 
 # Send heartbeat
