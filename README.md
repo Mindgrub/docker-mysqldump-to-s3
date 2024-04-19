@@ -2,6 +2,8 @@
 
 An Alpine-based Docker image for producing a file with `mysqldump` and uploading it to Amazon S3.
 
+There are tags for Alpine 3.19, 3.18, and 3.17. Both `linux/amd64` and `linux/arm64`.
+
 ## Environment Variables
 
 - `DB_HOST` – Required. The hostname to which `mysqldump` will connect.
