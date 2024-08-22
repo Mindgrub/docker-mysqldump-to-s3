@@ -1,4 +1,4 @@
-ARG ALPINE_VERSION=3.19
+ARG ALPINE_VERSION=3.20
 FROM alpine:${ALPINE_VERSION}
 
 RUN apk add --no-cache mysql-client python3 py3-pip coreutils jq aws-cli
