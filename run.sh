@@ -30,6 +30,7 @@ set -- "$@" "$DB_NAME"
 mysqldump_opts=$(printf ' %s' "$@")
 echo "About to export mysql://$DB_HOST/$DB_NAME to $destination"
 if [ -n "$REPLACE_SUBJECT" ] && [ -n "$REPLACE_TARGET" ]; then
+  echo "...and replace $REPLACE_SUBJECT with $REPLACE_TARGET"
   eval "mysqldump $mysqldump_opts" | sed "s/$REPLACE_SUBJECT/$REPLACE_TARGET/g" | gzip > "$destination"
 else
   eval "mysqldump $mysqldump_opts" | gzip > "$destination"
@@ -47,7 +48,7 @@ if [ -n "$REQUESTOR" ]; then
     extra_metadata=",Requestor=$REQUESTOR"
 fi
 echo "About to upload $destination to $s3_url"
-aws s3 cp "$destination" "$s3_url" --storage-class "$S3_STORAGE_TIER" --metadata "DatabaseHost=${DB_HOST},DatabaseName=${DB_NAME}${extra_metadata}"
+aws s3 cp "$destination" "$s3_url" --storage-class "$S3_STORAGE_TIER" --metadata "DatabaseHost=${DB_HOST},DatabaseName=${DB_NAME}${extra_metadata}" --no-progress
 echo "Upload to $s3_url completed"
 
 # Send activity success

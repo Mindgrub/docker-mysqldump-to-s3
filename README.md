@@ -5,9 +5,11 @@ An Alpine-based Docker image for producing a file with `mysqldump` and uploading
 There are tags for Alpine 3.20, 3.19, 3.18, and 3.17. This image is available on both the `linux/amd64` and `linux/arm64` platforms.
 
 ```bash
-# The latest tag will always point to the most recent version of Alpine.
+# The "latest" tag will always point to the most recent version of Alpine.
+# Assuming 3.20.2 is most recent, these three commands all pull the same image.
 docker pull @mindgrub/mysqldump-to-s3:latest
 docker pull @mindgrub/mysqldump-to-s3:1-alpine-3.20
+docker pull @mindgrub/mysqldump-to-s3:1-alpine-3.20.2
 
 # Pull other versions or architectures.
 docker pull --platform linux/arm64 @mindgrub/mysqldump-to-s3:1-alpine-3.18
