@@ -2,7 +2,16 @@
 
 An Alpine-based Docker image for producing a file with `mysqldump` and uploading it to Amazon S3.
 
-There are tags for Alpine 3.19, 3.18, and 3.17. Both `linux/amd64` and `linux/arm64`.
+There are tags for Alpine 3.20, 3.19, 3.18, and 3.17. This image is available on both the `linux/amd64` and `linux/arm64` platforms.
+
+```bash
+# The latest tag will always point to the most recent version of Alpine.
+docker pull @mindgrub/mysqldump-to-s3:latest
+docker pull @mindgrub/mysqldump-to-s3:1-alpine-3.20
+
+# Pull other versions or architectures.
+docker pull --platform linux/arm64 @mindgrub/mysqldump-to-s3:1-alpine-3.18
+```
 
 ## Environment Variables
 
@@ -18,6 +27,8 @@ There are tags for Alpine 3.19, 3.18, and 3.17. Both `linux/amd64` and `linux/ar
 - `MYSQLDUMP_OPTS` – Optional. Additional command line options to provide to `mysqldump`.
 - `REQUESTOR` – Optional. The email address of the user who requested this dump to be stored in the S3 metadata.
 - `SFN_TASK_TOKEN` – Optional. A Step Functions [Task Token](https://docs.aws.amazon.com/step-functions/latest/apireference/API_GetActivityTask.html#StepFunctions-GetActivityTask-response-taskToken). If present, this token will be used to call [`SendTaskHeartbeat`](https://docs.aws.amazon.com/step-functions/latest/apireference/API_SendTaskHeartbeat.html) and [`SendTaskSuccess`](https://docs.aws.amazon.com/step-functions/latest/apireference/API_SendTaskSuccess.html). The task output sent to `SendTaskSuccess` will consist of a JSON object with a single property: `uri` (containing the S3 URI of the database dump).
+- `REPLACE_SUBJECT` – Optional. A [Basic Regular Expression (BRE)](https://www.gnu.org/software/sed/manual/html_node/BRE-syntax.html) used to locate strings for replacement (e.g. DEFINER statements).
+- `REPLACE_TARGET` – Optional. Text that replaces all instances of the subject.
 - `MYSQL_NET_BUFFER_LENGTH` – _[Deprecated]_ Optional. The `net_buffer_length` setting for `mysqldump`.
 
 ### AWS Permissions

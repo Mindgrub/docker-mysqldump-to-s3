@@ -29,7 +29,11 @@ fi
 set -- "$@" "$DB_NAME"
 mysqldump_opts=$(printf ' %s' "$@")
 echo "About to export mysql://$DB_HOST/$DB_NAME to $destination"
-eval "mysqldump $mysqldump_opts" | gzip > "$destination"
+if [ -n "$REPLACE_SUBJECT" ] && [ -n "$REPLACE_TARGET" ]; then
+  eval "mysqldump $mysqldump_opts" | sed "s/$REPLACE_SUBJECT/$REPLACE_TARGET/g" | gzip > "$destination"
+else
+  eval "mysqldump $mysqldump_opts" | gzip > "$destination"
+fi
 echo "Export to $destination completed"
 
 # Send heartbeat
